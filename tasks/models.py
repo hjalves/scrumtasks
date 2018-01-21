@@ -14,14 +14,28 @@ class WorkingDay(models.Model):
     def __str__(self):
         return str(self.date)
 
-    # @property
-    # def exit_time(self):
-    #     return self
+    @property
+    def entry_time(self):
+        if self.entry is not None:
+            return self.entry.time()
+
+    @property
+    def exit(self):
+        if self.entry is not None and self.working_time is not None:
+            # noinspection PyTypeChecker
+            return (self.entry + self.working_time +
+                    (self.breaks or timedelta()))
+
+    @property
+    def exit_time(self):
+        if self.exit is not None:
+            return self.exit.time()
+
 
 class Project(models.Model):
     name = models.CharField(max_length=100)
-    redmine = models.CharField(max_length=100)
-    gitlab = models.CharField(max_length=100)
+    redmine = models.CharField(max_length=100, blank=True)
+    gitlab = models.CharField(max_length=100, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
