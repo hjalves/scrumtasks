@@ -17,15 +17,17 @@ django.setup()
 
 from tasks.models import WorkingDay
 
-with (project_root / 'wtv2.json').open() as f:
+with (project_root / 'wtv4.json').open() as f:
     data = json.load(f)
 
 dailyentries = data['dailyentries']
 for entry in dailyentries:
-    print(entry)
     start = parse_datetime(entry['start'])
     total_time = parse_duration(entry['total_time'])
     date = parse_date(entry['date'])
     breaks = timedelta(minutes=entry['breaks'])
-    WorkingDay.objects.create(date=date, entry=start, working_time=total_time,
-                              breaks=breaks)
+    WorkingDay.objects.update_or_create(
+        date=date, defaults={'entry': start,
+                             'working_time': total_time,
+                             'breaks': breaks}
+    )
